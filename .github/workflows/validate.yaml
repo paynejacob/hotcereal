@@ -1,0 +1,26 @@
+name: validate
+
+on: pull_request
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: "1.16"
+      - run: go fmt ./...
+      - run: pushd cmd/providergen; go fmt ./...
+      - run: if [ -n "$(git status --porcelain --untracked-files=no)" ]; then exit 1; fi
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: "1.16"
+      - run: go test ./...
+      - run: pushd cmd/providergen; go test ./...

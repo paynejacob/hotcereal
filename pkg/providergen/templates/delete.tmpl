@@ -1,0 +1,39 @@
+{{- /*gotype: github.com/paynejacob/hotcereal/cmd/providergen.Resource*/ -}}
+func (p *{{ .Name }}Provider) Delete(objs ...*{{ .Name }}) error {
+    p.mu.Lock()
+
+    keys := make([]string, len(objs))
+    for i, obj := range objs {
+        keys[i] = p.GetKey(obj)
+    }
+
+    // delete from the persistence layer
+    if err := p.Store.Delete(keys...); err != nil {
+        p.mu.Unlock()
+        return err
+    }
+
+    for _, obj := range objs {
+        // ensure the fields match the stored fields
+        obj = p.Get(obj.{{ .KeyField.Name }})
+
+        // cleanup lookups
+        {{- range .LookupFields }}
+        {{- if .IsArray }}
+        for _, v := range obj.{{ .Name }} {
+            delete(p.lookup{{.Name}}, v)
+        }
+        {{- else }}
+        delete(p.lookup{{.Name}}, obj.{{ .Name }})
+        {{- end }}
+        {{- end }}
+
+        delete(p.cache, obj.{{ .KeyField.Name }})
+        p.searchIndex.Delete(obj.{{ .KeyField.Name }})
+    }
+
+
+
+    p.mu.Unlock()
+    return nil
+}

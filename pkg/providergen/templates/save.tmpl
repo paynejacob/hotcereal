@@ -1,0 +1,34 @@
+{{- /*gotype: github.com/paynejacob/hotcereal/cmd/providergen.Resource*/ -}}
+func (p *{{ .Name }}Provider) Save(o *{{ .Name }}) error {
+    p.mu.Lock()
+
+    // persist the object to the store
+    body, err := msgpack.Marshal(o)
+    if err = p.Store.Save(p.GetKey(o), body); err != nil {
+    p.mu.Unlock()
+        return err
+    }
+
+    // update the cache
+    p.cache[o.{{ .KeyField.Name }}] = o
+
+    // update the search index
+    {{- range .SearchableFields }}
+    p.searchIndex.Write(graph.Tokenize(o.{{ .Name }}), o.{{ $.KeyField.Name }})
+    {{- end }}
+
+    // update lookups
+    {{- range .LookupFields }}
+    {{- if .IsArray }}
+    for _, v := range o.{{ .Name }} {
+        p.lookup{{.Name}}[v] = o
+    }
+    {{- else }}
+    p.lookup{{.Name}}[o.{{ .Name }}] = o
+    {{- end }}
+    {{- end }}
+
+    p.mu.Unlock()
+
+    return nil
+}

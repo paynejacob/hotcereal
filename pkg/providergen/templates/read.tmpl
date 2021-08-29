@@ -1,0 +1,38 @@
+{{- /*gotype: github.com/paynejacob/hotcereal/cmd/providergen.Resource*/ -}}
+func (p *{{ .Name }}Provider) Get(k string) *{{ .Name }} {
+    p.mu.RLock()
+
+    if o, ok := p.cache[k]; ok {
+        p.mu.RUnlock()
+        return o
+    }
+
+    p.mu.RUnlock()
+    return nil
+}
+
+func (p *{{ .Name }}Provider) List() []*{{ .Name }} {
+    rval := make([]*{{ .Name }}, 0)
+
+    p.mu.RLock()
+
+    for _, o := range p.cache {
+        rval = append(rval, o)
+    }
+
+    p.mu.RUnlock()
+    return rval
+}
+
+func (p *{{ .Name }}Provider) Search(query string) []*{{ .Name }} {
+    results := make([]*{{ .Name }}, 0)
+
+    p.mu.RLock()
+
+    for _, key := range p.searchIndex.Search(query) {
+        results = append(results, p.cache[key])
+    }
+
+    p.mu.RUnlock()
+    return results
+}

@@ -1,0 +1,14 @@
+{{- /*gotype: github.com/paynejacob/hotcereal/cmd/providergen.Resource*/ -}}
+{{- range .LookupFields }}
+func (p *{{ $.Name }}Provider) GetBy{{ .Name }}(v {{ .Type }}) *{{ $.Name }} {
+    p.mu.RLock()
+
+    if o, ok := p.lookup{{ .Name }}[v]; ok {
+        p.mu.RUnlock()
+        return o
+    }
+
+    p.mu.RUnlock()
+    return nil
+}
+{{- end }}

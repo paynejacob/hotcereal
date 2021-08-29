@@ -1,0 +1,78 @@
+{{- /*gotype: github.com/paynejacob/hotcereal/cmd/providergen.Resource*/ -}}
+package {{ .Package }}
+
+import (
+    "github.com/paynejacob/hotcereal/pkg/graph"
+    "github.com/paynejacob/hotcereal/pkg/store"
+    "github.com/vmihailenco/msgpack/v5"
+    "sync"
+)
+
+// DO NOT EDIT THIS CODE IS GENERATED
+
+type {{ .Name }}Provider struct {
+    Store store.Store
+
+    mu    sync.RWMutex
+
+    cache map[string]*{{ .Name }}
+    searchIndex *graph.Graph
+    {{- range .LookupFields }}
+    lookup{{ .Name }} map[{{ .Type }}]*{{ $.Name }}
+    {{- end}}
+}
+
+func (p *{{ .Name }}Provider) Initialize() error {
+    p.mu.Lock()
+    defer p.mu.Unlock()
+
+    // initialize internal struct values
+    p.cache = map[string]*{{ .Name }}{}
+    p.searchIndex = graph.New()
+    {{- range .LookupFields }}
+    p.lookup{{ .Name }} = map[{{ .Type }}]*{{ $.Name }}{}
+    {{- end}}
+
+    // load values from store
+    return p.Store.List(`{{ .Package }}::`, func(bytes []byte) error {
+        o := {{ .Name }}{}
+
+        if err := msgpack.Unmarshal(bytes, &o); err != nil {
+            return err
+        }
+
+        // write to the cache
+        p.cache[o.{{ .KeyField.Name }}] = &o
+
+        // write to the search graph
+        {{- range .SearchableFields }}
+        p.searchIndex.Write(graph.Tokenize(o.{{ .Name }}), o.{{ $.KeyField.Name }})
+        {{- end}}
+
+        // add lookups
+        {{- range .LookupFields }}
+        {{- if .IsArray }}
+        for _, v := range o.{{ .Name }} {
+            p.lookup{{.Name}}[v] = &o
+        }
+        {{- else }}
+        p.lookup{{.Name}}[o.{{ .Name }}] = &o
+        {{- end }}
+        {{- end }}
+
+        return nil
+    })
+}
+
+func (p *{{ $.Name }}Provider) GetKey(o *{{ .Name }}) string {
+    // package::type::id
+    return "{{ .Package }}::{{ .Name }}" + o.{{ .KeyField.Name }}
+}
+
+{{ template "read.tmpl" . }}
+
+{{ template "lookups.tmpl" . }}
+
+{{ template "save.tmpl" . }}
+
+{{ template "delete.tmpl" . }}
