@@ -54,8 +54,6 @@ func GenerateProvider(cmd *cobra.Command, args []string) {
 		log.Fatal(err.Error())
 	}
 
-
-
 	// render the provider template
 	err = render(resource)
 	if err != nil {
@@ -65,7 +63,7 @@ func GenerateProvider(cmd *cobra.Command, args []string) {
 }
 
 func loadPackage(path string) (*packages.Package, error) {
-	cfg := &packages.Config{Mode: packages.NeedTypes | packages.NeedImports, Env:  append(os.Environ(), "CGO_ENABLED=0")}
+	cfg := &packages.Config{Mode: packages.NeedTypes | packages.NeedImports, Env: append(os.Environ(), "CGO_ENABLED=0")}
 	pkgs, err := packages.Load(cfg, path)
 	if err != nil {
 		return nil, err

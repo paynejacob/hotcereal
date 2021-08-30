@@ -1,6 +1,8 @@
 package memory
 
 import (
+	"github.com/paynejacob/hotcereal/pkg/store"
+	"io"
 	"strings"
 	"sync"
 )
@@ -11,22 +13,22 @@ type Store struct {
 	data map[string][]byte
 }
 
-func (s *Store) Get(key string) ([]byte, error) {
+func (s *Store) Get(id store.Key) ([]byte, error) {
 	var rval []byte
 
 	s.mu.RLock()
-	rval = s.data[key]
+	rval = s.data[id.String()]
 	s.mu.RUnlock()
 
 	return rval, nil
 }
 
-func (s *Store) List(prefix string, process func([]byte) error) error {
+func (s *Store) List(prefix store.TypeKey, process func([]byte) error) error {
 	var err error
 
 	s.mu.RLock()
 	for k, v := range s.data {
-		if strings.HasPrefix(k, prefix) {
+		if strings.HasPrefix(k, prefix.String()) {
 			err = process(v)
 			if err != nil {
 				break
@@ -38,28 +40,47 @@ func (s *Store) List(prefix string, process func([]byte) error) error {
 	return err
 }
 
-func (s *Store) Save(key string, bytes []byte) error {
+func (s *Store) ReadLazy(key store.FieldKey, w io.Writer) error {
+	var rval []byte
+
+	s.mu.RLock()
+	rval = s.data[key.String()]
+	s.mu.RUnlock()
+
+	_, err := w.Write(rval)
+	return err
+}
+
+func (s *Store) WriteLazy(key store.FieldKey, r io.Reader) error {
 	s.mu.Lock()
-	s.data[key] = bytes
+	_, err := r.Read(s.data[key.String()])
+	s.mu.Unlock()
+
+	return err
+}
+
+func (s *Store) Save(key store.Key, data []byte) error {
+	s.mu.Lock()
+	s.data[key.String()] = data
 	s.mu.RUnlock()
 
 	return nil
 }
 
-func (s *Store) BulkSave(m map[string][]byte) error {
+func (s *Store) BulkSave(m map[store.Key][]byte) error {
 	s.mu.Lock()
 	for k, v := range m {
-		s.data[k] = v
+		s.data[k.String()] = v
 	}
 	s.mu.Unlock()
 
 	return nil
 }
 
-func (s *Store) Delete(key ...string) error {
+func (s *Store) Delete(key ...store.Key) error {
 	s.mu.Lock()
 	for _, k := range key {
-		delete(s.data, k)
+		delete(s.data, k.String())
 	}
 	s.mu.Unlock()
 

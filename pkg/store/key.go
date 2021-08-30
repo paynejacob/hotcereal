@@ -1,7 +1,5 @@
 package store
 
-// TODO: document and test this
-
 type Key interface {
 	String() string
 	Bytes() []byte
@@ -26,7 +24,7 @@ func (k TypeKey) Package() string {
 }
 
 func (k TypeKey) Type() string {
-	return k.Body[k.PackageLength:k.TypeLength]
+	return k.Body[k.PackageLength : k.PackageLength+k.TypeLength]
 }
 
 type ObjectKey struct {
@@ -35,7 +33,7 @@ type ObjectKey struct {
 }
 
 func (k ObjectKey) Id() string {
-	return k.Body[k.PackageLength+ k.TypeLength:]
+	return k.Body[k.PackageLength+k.TypeLength : k.PackageLength+k.TypeLength+k.IdLength]
 }
 
 type FieldKey struct {
@@ -44,6 +42,5 @@ type FieldKey struct {
 }
 
 func (k FieldKey) Field() string {
-	return k.Body[k.PackageLength+ k.TypeLength+ k.IdLength:]
+	return k.Body[k.PackageLength+k.TypeLength+k.IdLength:]
 }
-

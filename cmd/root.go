@@ -12,7 +12,7 @@ var (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "hotcereal",
+	Use: "hotcereal",
 }
 
 func Execute() {

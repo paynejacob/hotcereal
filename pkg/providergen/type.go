@@ -18,13 +18,13 @@ type Resource struct {
 	KeyField         Field
 	SearchableFields []Field
 	LookupFields     []Field
-	LazyFields     []Field
-	Fields     []Field
+	LazyFields       []Field
+	Fields           []Field
 }
 
 func ResourceFromStruct(name, pkg string, t *types.Struct) (r *Resource, err error) {
 	r = &Resource{
-		Name: name,
+		Name:    name,
 		Package: pkg,
 	}
 
@@ -99,5 +99,5 @@ func getFieldRenderType(f *types.Var) string {
 
 	// TODO: this assumes the type is in the same package
 	// if our type comes from the same package just return the type name otherwise prepend the package name
-	return renderType[customSplit + 1:]
+	return renderType[customSplit+1:]
 }

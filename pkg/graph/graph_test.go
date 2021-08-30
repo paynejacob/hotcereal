@@ -20,10 +20,10 @@ func TestGraph_Write(t *testing.T) {
 		g = graph.New()
 		g.Write([]string{"abc"}, "z")
 
-		assert.Equal(t, []string{"z"}, g.Search("abc"))
-		assert.Equal(t, []string{"z"}, g.Search("ab"))
-		assert.Equal(t, []string{"z"}, g.Search("a"))
-		assert.Equal(t, []string{"z"}, g.Search(""))
+		assert.ElementsMatch(t, []string{"z"}, g.Search("abc"))
+		assert.ElementsMatch(t, []string{"z"}, g.Search("ab"))
+		assert.ElementsMatch(t, []string{"z"}, g.Search("a"))
+		assert.ElementsMatch(t, []string{"z"}, g.Search(""))
 	}
 
 	// Write with no overlap
@@ -32,14 +32,14 @@ func TestGraph_Write(t *testing.T) {
 		g.Write([]string{"abc"}, "z")
 		g.Write([]string{"def"}, "y")
 
-		assert.Equal(t, []string{"z"}, g.Search("abc"))
-		assert.Equal(t, []string{"z"}, g.Search("ab"))
-		assert.Equal(t, []string{"z"}, g.Search("a"))
+		assert.ElementsMatch(t, []string{"z"}, g.Search("abc"))
+		assert.ElementsMatch(t, []string{"z"}, g.Search("ab"))
+		assert.ElementsMatch(t, []string{"z"}, g.Search("a"))
 
-		assert.Equal(t, []string{"y"}, g.Search("def"))
-		assert.Equal(t, []string{"y"}, g.Search("de"))
-		assert.Equal(t, []string{"y"}, g.Search("f"))
-		assert.Equal(t, []string{"z", "y"}, g.Search(""))
+		assert.ElementsMatch(t, []string{"y"}, g.Search("def"))
+		assert.ElementsMatch(t, []string{"y"}, g.Search("de"))
+		assert.ElementsMatch(t, []string{"y"}, g.Search("d"))
+		assert.ElementsMatch(t, []string{"z", "y"}, g.Search(""))
 	}
 
 	// Write with overlap
@@ -48,11 +48,11 @@ func TestGraph_Write(t *testing.T) {
 		g.Write([]string{"abc"}, "z")
 		g.Write([]string{"abcd"}, "y")
 
-		assert.Equal(t, []string{"y"}, g.Search("abcd"))
-		assert.Equal(t, []string{"z", "y"}, g.Search("abc"))
-		assert.Equal(t, []string{"z", "y"}, g.Search("ab"))
-		assert.Equal(t, []string{"z", "y"}, g.Search("a"))
-		assert.Equal(t, []string{"z", "y"}, g.Search(""))
+		assert.ElementsMatch(t, []string{"y"}, g.Search("abcd"))
+		assert.ElementsMatch(t, []string{"z", "y"}, g.Search("abc"))
+		assert.ElementsMatch(t, []string{"z", "y"}, g.Search("ab"))
+		assert.ElementsMatch(t, []string{"y", "z"}, g.Search("a"))
+		assert.ElementsMatch(t, []string{"z", "y"}, g.Search(""))
 	}
 
 	// Write twice
@@ -61,10 +61,10 @@ func TestGraph_Write(t *testing.T) {
 		g.Write([]string{"abc"}, "z")
 		g.Write([]string{"abc"}, "z")
 
-		assert.Equal(t, []string{"z"}, g.Search("abc"))
-		assert.Equal(t, []string{"z"}, g.Search("ab"))
-		assert.Equal(t, []string{"z"}, g.Search("a"))
-		assert.Equal(t, []string{"z"}, g.Search(""))
+		assert.ElementsMatch(t, []string{"z"}, g.Search("abc"))
+		assert.ElementsMatch(t, []string{"z"}, g.Search("ab"))
+		assert.ElementsMatch(t, []string{"z"}, g.Search("a"))
+		assert.ElementsMatch(t, []string{"z"}, g.Search(""))
 	}
 }
 
@@ -75,9 +75,9 @@ func TestGraph_Search(t *testing.T) {
 	{
 		g = graph.New()
 
-		assert.Equal(t, []string{}, g.Search("a"))
-		assert.Equal(t, []string{}, g.Search("ab"))
-		assert.Equal(t, []string{}, g.Search(""))
+		assert.ElementsMatch(t, []string{}, g.Search("a"))
+		assert.ElementsMatch(t, []string{}, g.Search("ab"))
+		assert.ElementsMatch(t, []string{}, g.Search(""))
 	}
 
 	// search empty query
@@ -85,7 +85,7 @@ func TestGraph_Search(t *testing.T) {
 		g = graph.New()
 		g.Write([]string{"abc"}, "z")
 
-		assert.Equal(t, []string{"z"}, g.Search(""))
+		assert.ElementsMatch(t, []string{"z"}, g.Search(""))
 	}
 
 	// search partial match
@@ -93,8 +93,8 @@ func TestGraph_Search(t *testing.T) {
 		g = graph.New()
 		g.Write([]string{"abc"}, "z")
 
-		assert.Equal(t, []string{"z"}, g.Search("ab"))
-		assert.Equal(t, []string{"z"}, g.Search("a"))
+		assert.ElementsMatch(t, []string{"z"}, g.Search("ab"))
+		assert.ElementsMatch(t, []string{"z"}, g.Search("a"))
 	}
 
 	// search full match
@@ -102,7 +102,7 @@ func TestGraph_Search(t *testing.T) {
 		g = graph.New()
 		g.Write([]string{"abc"}, "z")
 
-		assert.Equal(t, []string{"z"}, g.Search("abc"))
+		assert.ElementsMatch(t, []string{"z"}, g.Search("abc"))
 	}
 
 	// search no match
@@ -110,7 +110,7 @@ func TestGraph_Search(t *testing.T) {
 		g = graph.New()
 		g.Write([]string{"abc"}, "z")
 
-		assert.Equal(t, []string{}, g.Search("def"))
+		assert.ElementsMatch(t, []string{}, g.Search("def"))
 	}
 }
 
@@ -131,10 +131,10 @@ func TestGraph_Delete(t *testing.T) {
 
 		g.Delete("y")
 
-		assert.Equal(t, []string{"z"}, g.Search("abc"))
-		assert.Equal(t, []string{"z"}, g.Search("ab"))
-		assert.Equal(t, []string{"z"}, g.Search("a"))
-		assert.Equal(t, []string{"z"}, g.Search(""))
+		assert.ElementsMatch(t, []string{"z"}, g.Search("abc"))
+		assert.ElementsMatch(t, []string{"z"}, g.Search("ab"))
+		assert.ElementsMatch(t, []string{"z"}, g.Search("a"))
+		assert.ElementsMatch(t, []string{"z"}, g.Search(""))
 	}
 
 	// match on all nodes
@@ -145,10 +145,10 @@ func TestGraph_Delete(t *testing.T) {
 
 		g.Delete("y")
 
-		assert.Equal(t, []string{"z"}, g.Search("abc"))
-		assert.Equal(t, []string{"z"}, g.Search("ab"))
-		assert.Equal(t, []string{"z"}, g.Search("a"))
-		assert.Equal(t, []string{"z"}, g.Search(""))
+		assert.ElementsMatch(t, []string{"z"}, g.Search("abc"))
+		assert.ElementsMatch(t, []string{"z"}, g.Search("ab"))
+		assert.ElementsMatch(t, []string{"z"}, g.Search("a"))
+		assert.ElementsMatch(t, []string{"z"}, g.Search(""))
 	}
 
 	// match head nodes
@@ -159,10 +159,10 @@ func TestGraph_Delete(t *testing.T) {
 
 		g.Delete("y")
 
-		assert.Equal(t, []string{"z"}, g.Search("abc"))
-		assert.Equal(t, []string{"z"}, g.Search("ab"))
-		assert.Equal(t, []string{"z"}, g.Search("a"))
-		assert.Equal(t, []string{"z"}, g.Search(""))
+		assert.ElementsMatch(t, []string{"z"}, g.Search("abc"))
+		assert.ElementsMatch(t, []string{"z"}, g.Search("ab"))
+		assert.ElementsMatch(t, []string{"z"}, g.Search("a"))
+		assert.ElementsMatch(t, []string{"z"}, g.Search(""))
 	}
 
 	// match tail nodes
@@ -173,10 +173,10 @@ func TestGraph_Delete(t *testing.T) {
 
 		g.Delete("y")
 
-		assert.Equal(t, []string{}, g.Search("abcd"))
-		assert.Equal(t, []string{"z"}, g.Search("abc"))
-		assert.Equal(t, []string{"z"}, g.Search("ab"))
-		assert.Equal(t, []string{"z"}, g.Search("a"))
-		assert.Equal(t, []string{"z"}, g.Search(""))
+		assert.ElementsMatch(t, []string{}, g.Search("abcd"))
+		assert.ElementsMatch(t, []string{"z"}, g.Search("abc"))
+		assert.ElementsMatch(t, []string{"z"}, g.Search("ab"))
+		assert.ElementsMatch(t, []string{"z"}, g.Search("a"))
+		assert.ElementsMatch(t, []string{"z"}, g.Search(""))
 	}
 }
