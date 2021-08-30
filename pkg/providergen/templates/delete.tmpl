@@ -1,10 +1,16 @@
-{{- /*gotype: github.com/paynejacob/hotcereal/cmd/providergen.Resource*/ -}}
+{{- /*gotype: github.com/paynejacob/hotcereal/pkg/providergen.Resource*/ -}}
 func (p *{{ .Name }}Provider) Delete(objs ...*{{ .Name }}) error {
     p.mu.Lock()
 
-    keys := make([]string, len(objs))
-    for i, obj := range objs {
-        keys[i] = p.GetKey(obj)
+    var keys []store.Key
+
+    for _, obj := range objs {
+        keys = append(keys,
+            p.ObjectKey(obj),
+        {{- range .LazyFields }}
+            p.FieldKey(obj, "{{ .Name }}"),
+        {{- end }}
+        )
     }
 
     // delete from the persistence layer

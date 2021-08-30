@@ -18,6 +18,8 @@ type Resource struct {
 	KeyField         Field
 	SearchableFields []Field
 	LookupFields     []Field
+	LazyFields     []Field
+	Fields     []Field
 }
 
 func ResourceFromStruct(name, pkg string, t *types.Struct) (r *Resource, err error) {
@@ -35,6 +37,7 @@ func ResourceFromStruct(name, pkg string, t *types.Struct) (r *Resource, err err
 			Type:    getFieldRenderType(t.Field(i)),
 		}
 
+		// TypeKey
 		if fieldAttrs.IsKey {
 			if r.KeyField.Name != "" {
 				err = errors.New(r.Name + ": has more than 1 key field")
@@ -49,6 +52,7 @@ func ResourceFromStruct(name, pkg string, t *types.Struct) (r *Resource, err err
 			r.KeyField = field
 		}
 
+		// Searchable
 		if fieldAttrs.Searchable {
 			if field.Type != "string" {
 				err = errors.New(field.Name + ": searchable fields must be type [string]")
@@ -58,8 +62,22 @@ func ResourceFromStruct(name, pkg string, t *types.Struct) (r *Resource, err err
 			r.SearchableFields = append(r.SearchableFields, field)
 		}
 
+		// Lookup
 		if fieldAttrs.Lookup {
 			r.LookupFields = append(r.LookupFields, field)
+		}
+
+		// Lazy
+		if fieldAttrs.Lazy {
+			if !field.IsArray || field.Type != "[]byte" {
+				err = errors.New(field.Name + ": lazy fields must be type [[]byte]")
+			}
+
+			r.LazyFields = append(r.LazyFields, field)
+		}
+
+		if !fieldAttrs.Lazy {
+			r.Fields = append(r.Fields, field)
 		}
 	}
 

@@ -1,0 +1,23 @@
+{{- /*gotype: github.com/paynejacob/hotcereal/pkg/providergen.Resource*/ -}}
+func (p *{{ .Name }}Provider) TypeKey() store.TypeKey {
+    return store.TypeKey{
+        Body: "{{ .Package }}{{ .Name }}",
+        PackageLength: {{ .Package | len }},
+        TypeLength: {{ .Name | len }},
+    }
+}
+
+func (p *{{ .Name }}Provider) ObjectKey(o *{{ .Name }}) store.ObjectKey {
+    return store.ObjectKey{
+            TypeKey: p.TypeKey(),
+            IdLength: len(o.{{ .KeyField.Name }}),
+    }
+}
+
+func (p *{{ .Name }}Provider) FieldKey(o *{{ .Name }}, fieldName string) store.FieldKey {
+    return store.FieldKey{
+        ObjectKey: p.ObjectKey(o),
+        FieldLength: len(fieldName),
+    }
+}
+

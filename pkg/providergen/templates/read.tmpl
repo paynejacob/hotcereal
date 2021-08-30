@@ -1,8 +1,8 @@
-{{- /*gotype: github.com/paynejacob/hotcereal/cmd/providergen.Resource*/ -}}
-func (p *{{ .Name }}Provider) Get(k string) *{{ .Name }} {
+{{- /*gotype: github.com/paynejacob/hotcereal/pkg/providergen.Resource*/ -}}
+func (p *{{ .Name }}Provider) Get(id string) *{{ .Name }} {
     p.mu.RLock()
 
-    if o, ok := p.cache[k]; ok {
+    if o, ok := p.cache[id]; ok {
         p.mu.RUnlock()
         return o
     }
@@ -29,8 +29,8 @@ func (p *{{ .Name }}Provider) Search(query string) []*{{ .Name }} {
 
     p.mu.RLock()
 
-    for _, key := range p.searchIndex.Search(query) {
-        results = append(results, p.cache[key])
+    for _, id := range p.searchIndex.Search(query) {
+        results = append(results, p.cache[id])
     }
 
     p.mu.RUnlock()

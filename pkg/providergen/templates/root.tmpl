@@ -1,4 +1,4 @@
-{{- /*gotype: github.com/paynejacob/hotcereal/cmd/providergen.Resource*/ -}}
+{{- /*gotype: github.com/paynejacob/hotcereal/pkg/providergen.Resource*/ -}}
 package {{ .Package }}
 
 import (
@@ -15,7 +15,7 @@ type {{ .Name }}Provider struct {
 
     mu    sync.RWMutex
 
-    cache map[string]*{{ .Name }}
+    cache map[{{ .KeyField.Type }}]*{{ .Name }}
     searchIndex *graph.Graph
     {{- range .LookupFields }}
     lookup{{ .Name }} map[{{ .Type }}]*{{ $.Name }}
@@ -27,14 +27,14 @@ func (p *{{ .Name }}Provider) Initialize() error {
     defer p.mu.Unlock()
 
     // initialize internal struct values
-    p.cache = map[string]*{{ .Name }}{}
+    p.cache = map[{{ .KeyField.Type }}]*{{ .Name }}{}
     p.searchIndex = graph.New()
     {{- range .LookupFields }}
     p.lookup{{ .Name }} = map[{{ .Type }}]*{{ $.Name }}{}
     {{- end}}
 
     // load values from store
-    return p.Store.List(`{{ .Package }}::`, func(bytes []byte) error {
+    return p.Store.List(p.TypeKey(), func(bytes []byte) error {
         o := {{ .Name }}{}
 
         if err := msgpack.Unmarshal(bytes, &o); err != nil {
@@ -64,11 +64,6 @@ func (p *{{ .Name }}Provider) Initialize() error {
     })
 }
 
-func (p *{{ $.Name }}Provider) GetKey(o *{{ .Name }}) string {
-    // package::type::id
-    return "{{ .Package }}::{{ .Name }}" + o.{{ .KeyField.Name }}
-}
-
 {{ template "read.tmpl" . }}
 
 {{ template "lookups.tmpl" . }}
@@ -76,3 +71,9 @@ func (p *{{ $.Name }}Provider) GetKey(o *{{ .Name }}) string {
 {{ template "save.tmpl" . }}
 
 {{ template "delete.tmpl" . }}
+
+{{ template "lazy.tmpl" . }}
+
+{{ template "keys.tmpl" . }}
+
+{{ template "encoding.tmpl" . }}

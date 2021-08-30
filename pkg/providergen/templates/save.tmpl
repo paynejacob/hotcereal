@@ -1,10 +1,10 @@
-{{- /*gotype: github.com/paynejacob/hotcereal/cmd/providergen.Resource*/ -}}
+{{- /*gotype: github.com/paynejacob/hotcereal/pkg/providergen.Resource*/ -}}
 func (p *{{ .Name }}Provider) Save(o *{{ .Name }}) error {
     p.mu.Lock()
 
     // persist the object to the store
     body, err := msgpack.Marshal(o)
-    if err = p.Store.Save(p.GetKey(o), body); err != nil {
+    if err = p.Store.Save(p.ObjectKey(o), body); err != nil {
     p.mu.Unlock()
         return err
     }

@@ -1,0 +1,20 @@
+{{- /*gotype: github.com/paynejacob/hotcereal/pkg/providergen.Resource*/ -}}
+
+var _ msgpack.CustomEncoder = (*{{ .Name }})(nil)
+var _ msgpack.CustomDecoder = (*{{ .Name }})(nil)
+
+func (s *{{ .Name }}) EncodeMsgpack(enc *msgpack.Encoder) error {
+    return enc.EncodeMulti(
+        {{- range .Fields }}
+        s.{{ .Name }},
+        {{- end }}
+    )
+}
+
+func (s *{{ .Name }}) DecodeMsgpack(dec *msgpack.Decoder) error {
+    return dec.DecodeMulti(
+        {{- range .Fields }}
+        s.{{ .Name }},
+        {{- end }}
+    )
+}

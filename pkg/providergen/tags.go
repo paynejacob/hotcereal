@@ -1,11 +1,14 @@
 package providergen
 
-import "github.com/fatih/structtag"
+import (
+	"github.com/fatih/structtag"
+)
 
 type FieldAttributes struct {
 	IsKey      bool
 	Searchable bool
 	Lookup     bool
+	Lazy     bool
 }
 
 const tagKey = "hotcereal"
@@ -23,6 +26,8 @@ func ParseTag(s string) FieldAttributes {
 		return fa
 	}
 
+	// TODO: test lazy
+
 	for _, attr := range append(tag.Options, tag.Name) {
 		switch attr {
 		case "":
@@ -33,6 +38,8 @@ func ParseTag(s string) FieldAttributes {
 			fa.Searchable = true
 		case "key":
 			fa.IsKey = true
+		case "lazy":
+			fa.Lazy = true
 		}
 	}
 

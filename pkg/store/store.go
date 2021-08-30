@@ -1,13 +1,17 @@
 package store
 
+import "io"
+
 type Store interface {
-	Get(key string) ([]byte, error)
-	List(prefix string, process func([]byte) error) error
+	Get(key Key) ([]byte, error)
+	List(prefix TypeKey, process func([]byte) error) error
+	ReadLazy(key FieldKey, w io.Writer) error
 
-	Save(string, []byte) error
-	BulkSave(map[string][]byte) error
+	WriteLazy(key FieldKey, r io.Reader) error
+	Save(key Key, data []byte) error
+	BulkSave(map[Key][]byte) error
 
-	Delete(key ...string) error
+	Delete(key ...Key) error
 
 	Close() error
 }

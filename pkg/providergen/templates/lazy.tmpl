@@ -1,0 +1,10 @@
+{{- /*gotype: github.com/paynejacob/hotcereal/pkg/providergen.Resource*/ -}}
+{{- range .LazyFields }}
+func (p *{{ $.Name }}Provider) Read{{ .Name }}(o *{{ $.Name }}, w io.Writer) error {
+    return p.Store.ReadLazy(p.FieldKey(o, "{{ .Name }}"), w)
+}
+
+func (p *{{ $.Name }}Provider) Write{{ .Name }}(o *{{ $.Name }}, r io.Reader) error {
+    return p.Store.WriteLazy(p.FieldKey(o, "{{ .Name }}"), r)
+}
+{{- end }}
