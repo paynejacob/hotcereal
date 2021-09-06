@@ -13,6 +13,12 @@ type Store struct {
 	data map[string][]byte
 }
 
+func New() *Store {
+	return &Store{
+		data: make(map[string][]byte, 0),
+	}
+}
+
 func (s *Store) Get(id store.Key) ([]byte, error) {
 	var rval []byte
 
