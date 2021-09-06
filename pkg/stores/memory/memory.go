@@ -68,7 +68,7 @@ func (s *Store) WriteLazy(key store.FieldKey, r io.Reader) error {
 func (s *Store) Save(key store.Key, data []byte) error {
 	s.mu.Lock()
 	s.data[key.String()] = data
-	s.mu.RUnlock()
+	s.mu.Unlock()
 
 	return nil
 }
