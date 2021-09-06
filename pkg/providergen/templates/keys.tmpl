@@ -8,16 +8,22 @@ func (p *{{ .Name }}Provider) TypeKey() store.TypeKey {
 }
 
 func (p *{{ .Name }}Provider) ObjectKey(o *{{ .Name }}) store.ObjectKey {
-    return store.ObjectKey{
+    k := store.ObjectKey{
             TypeKey: p.TypeKey(),
             IdLength: len(o.{{ .KeyField.Name }}),
     }
+
+    k.Body += o.{{.KeyField.Name}}
+    return k
 }
 
 func (p *{{ .Name }}Provider) FieldKey(o *{{ .Name }}, fieldName string) store.FieldKey {
-    return store.FieldKey{
+    k := store.FieldKey{
         ObjectKey: p.ObjectKey(o),
         FieldLength: len(fieldName),
     }
+
+    k.Body += fieldName
+    return k
 }
 
