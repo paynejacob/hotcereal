@@ -19,9 +19,13 @@ func (p *{{ .Name }}Provider) Delete(objs ...*{{ .Name }}) error {
         return err
     }
 
+    var exists bool
     for _, obj := range objs {
         // ensure the fields match the stored fields
-        obj = p.Get(obj.{{ .KeyField.Name }})
+        obj, exists = p.cache[obj.{{ .KeyField.Name }}];
+        if !exists {
+            continue
+        }
 
         // cleanup lookups
         {{- range .LookupFields }}
