@@ -58,8 +58,13 @@ func (s *Store) ReadLazy(key store.FieldKey, w io.Writer) error {
 }
 
 func (s *Store) WriteLazy(key store.FieldKey, r io.Reader) error {
+	content, err := io.ReadAll(r)
+	if err != nil {
+		return err
+	}
+
 	s.mu.Lock()
-	_, err := r.Read(s.data[key.String()])
+	s.data[key.String()] = content
 	s.mu.Unlock()
 
 	return err
