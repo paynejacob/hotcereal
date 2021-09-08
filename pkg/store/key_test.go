@@ -12,7 +12,7 @@ func TestTypeKey_String(t *testing.T) {
 		TypeLength:    5,
 	}
 
-	assert.Equal(t, "hotcerealStore", sut.String())
+	assert.Equal(t, "hotcerealStore\x00", sut.String())
 }
 
 func TestTypeKey_Bytes(t *testing.T) {
@@ -22,7 +22,7 @@ func TestTypeKey_Bytes(t *testing.T) {
 		TypeLength:    5,
 	}
 
-	assert.Equal(t, []byte("hotcerealStore"), sut.Bytes())
+	assert.Equal(t, []byte("hotcerealStore\x00"), sut.Bytes())
 }
 func TestTypeKey_Package(t *testing.T) {
 	sut := TypeKey{
@@ -53,7 +53,7 @@ func TestObjectKey_String(t *testing.T) {
 		IdLength: 3,
 	}
 
-	assert.Equal(t, "hotcerealStore123", sut.String())
+	assert.Equal(t, "hotcerealStore\x00123\x01", sut.String())
 }
 
 func TestObjectKey_Bytes(t *testing.T) {
@@ -66,7 +66,7 @@ func TestObjectKey_Bytes(t *testing.T) {
 		IdLength: 3,
 	}
 
-	assert.Equal(t, []byte("hotcerealStore123"), sut.Bytes())
+	assert.Equal(t, []byte("hotcerealStore\x00123\x01"), sut.Bytes())
 }
 func TestObjectKey_Package(t *testing.T) {
 	sut := ObjectKey{
@@ -119,7 +119,7 @@ func TestFieldKey_String(t *testing.T) {
 		FieldLength: 4,
 	}
 
-	assert.Equal(t, "hotcerealStore123file", sut.String())
+	assert.Equal(t, "hotcerealStore\x00123\x01file\x02", sut.String())
 }
 
 func TestFieldKey_Bytes(t *testing.T) {
@@ -135,7 +135,7 @@ func TestFieldKey_Bytes(t *testing.T) {
 		FieldLength: 4,
 	}
 
-	assert.Equal(t, []byte("hotcerealStore123file"), sut.Bytes())
+	assert.Equal(t, []byte("hotcerealStore\x00123\x01file\x02"), sut.Bytes())
 }
 func TestFieldKey_Package(t *testing.T) {
 	sut := FieldKey{
