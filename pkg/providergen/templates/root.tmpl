@@ -35,7 +35,7 @@ func (p *{{ .Name }}Provider) Initialize() error {
 
     // load values from store
     return p.Store.List(p.TypeKey(), func(bytes []byte) error {
-        o := {{ .Name }}{}
+        var o {{ .Name }}
 
         if err := msgpack.Unmarshal(bytes, &o); err != nil {
             return err

@@ -14,7 +14,7 @@ func (s *{{ .Name }}) EncodeMsgpack(enc *msgpack.Encoder) error {
 func (s *{{ .Name }}) DecodeMsgpack(dec *msgpack.Decoder) error {
     return dec.DecodeMulti(
         {{- range .Fields }}
-        s.{{ .Name }},
+        &s.{{ .Name }},
         {{- end }}
     )
 }
